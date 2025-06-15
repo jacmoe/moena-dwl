@@ -2,7 +2,18 @@ Index: dwl/config.def.h
 ===================================================================
 --- dwl.orig/config.def.h
 +++ dwl/config.def.h
-@@ -119,7 +119,7 @@ static const enum libinput_config_tap_bu
+@@ -57,7 +57,9 @@ static const struct xkb_rule_names xkb_r
+ 	/* example:
+ 	.options = "ctrl:nocaps",
+ 	*/
+-	.options = NULL,
++    .layout = "us,no",
++    .variant = "colemak, colemak",
++    .options = "grp:shifts_toggle",
+ };
+ 
+ static const int repeat_rate = 25;
+@@ -119,7 +121,7 @@ static const enum libinput_config_tap_bu
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
  /* commands */
