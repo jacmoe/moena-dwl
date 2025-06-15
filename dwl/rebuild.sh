@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-rm -f config.h && sudo make clean install
+source ./cleah.sh &&
+sudo make clean install
