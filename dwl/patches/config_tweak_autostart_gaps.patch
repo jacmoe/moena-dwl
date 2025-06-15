@@ -26,3 +26,14 @@ Index: dwl/config.def.h
          NULL /* terminate */
  };
  
+Index: dwl/dwl.desktop
+===================================================================
+--- dwl.orig/dwl.desktop
++++ dwl/dwl.desktop
+@@ -1,5 +1,5 @@
+ [Desktop Entry]
+ Name=dwl
+ Comment=dwm for Wayland
+-Exec=dwl
++Exec=slstatus -s | dwl
+ Type=Application
