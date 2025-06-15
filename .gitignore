@@ -1,3 +1,6 @@
 somebar-1.0.3/.builds
 
 dwl/dwl
+dwl/config.h
+dwl/dwl.o
+dwl/util.o
