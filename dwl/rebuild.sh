@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-source ./cleah.sh &&
+source ./clean.sh &&
 sudo make clean install
