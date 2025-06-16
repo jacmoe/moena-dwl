@@ -2,6 +2,15 @@ Index: dwl/config.def.h
 ===================================================================
 --- dwl.orig/config.def.h
 +++ dwl/config.def.h
+@@ -26,7 +26,7 @@ static uint32_t colors[][3]
+ };
+ 
+ /* tagging - TAGCOUNT must be no greater than 31 */
+-static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
++static char *tags[] = { "1", "2", "3" };
+ 
+ /* logging */
+ static int log_level = WLR_ERROR;
 @@ -139,23 +139,29 @@ static const enum libinput_config_tap_bu
  #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
  
@@ -23,14 +32,16 @@ Index: dwl/config.def.h
 -	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     spawn,          {.v = termcmd} },
 +	{ MODKEY,                    XKB_KEY_p,          spawn,          {.v = roficmd} },
 +	{ MODKEY,                    XKB_KEY_Return,     spawn,          {.v = termcmd} },
-+	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_x,     spawn,          {.v = appscmd} },
++	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_x,          spawn,          {.v = appscmd} },
  	{ MODKEY,                    XKB_KEY_b,          togglebar,      {0} },
 -	{ MODKEY,                    XKB_KEY_j,          focusstack,     {.i = +1} },
 -	{ MODKEY,                    XKB_KEY_k,          focusstack,     {.i = -1} },
+-	{ MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} },
+-	{ MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} },
 +	{ MODKEY,                    XKB_KEY_n,          focusstack,     {.i = +1} },
 +	{ MODKEY,                    XKB_KEY_e,          focusstack,     {.i = -1} },
- 	{ MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} },
- 	{ MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} },
++	/* { MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} }, */
++	/* { MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} }, */
  	{ MODKEY,                    XKB_KEY_h,          setmfact,       {.f = -0.05f} },
  	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05f} },
 -	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
