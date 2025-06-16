@@ -35,5 +35,5 @@ Index: dwl/dwl.desktop
  Name=dwl
  Comment=dwm for Wayland
 -Exec=dwl
-+Exec=slstatus -s | dwl
++Exec=slstatus | dwl
  Type=Application
