@@ -1,5 +1,5 @@
 [Desktop Entry]
 Name=dwl
 Comment=dwm for Wayland
-Exec=dbus-run-session -- sh -c 'slstatus | dwl'
+Exec=/home/moena/bin/startdwl.sh
 Type=Application
