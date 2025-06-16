@@ -37,11 +37,11 @@ Subject: [PATCH] Add a system tray next to sewn's bar
  create mode 100644 systray/watcher.c
  create mode 100644 systray/watcher.h
 
-diff --git a/Makefile b/Makefile
-index 9bc67db..9d50189 100644
---- a/Makefile
-+++ b/Makefile
-@@ -12,17 +12,28 @@ DWLDEVCFLAGS = -g -pedantic -Wall -Wextra -Wdeclaration-after-statement \
+Index: dwl/Makefile
+===================================================================
+--- dwl.orig/Makefile
++++ dwl/Makefile
+@@ -12,17 +12,28 @@ DWLDEVCFLAGS = -g -pedantic -Wall -Wextr
  	-Wfloat-conversion
  
  # CFLAGS / LDFLAGS
@@ -84,39 +84,38 @@ index 9bc67db..9d50189 100644
  
  dist: clean
  	mkdir -p dwl-$(VERSION)
-diff --git a/config.def.h b/config.def.h
-index 5d1dc2b..451643e 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -7,6 +7,8 @@
- static const int sloppyfocus               = 1;  /* focus follows mouse */
- static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
- static const unsigned int borderpx         = 1;  /* border pixel of windows */
-+static const unsigned int systrayspacing   = 2; /* systray spacing */
-+static const int showsystray               = 1; /* 0 means no systray */
+Index: dwl/config.def.h
+===================================================================
+--- dwl.orig/config.def.h
++++ dwl/config.def.h
+@@ -12,6 +12,8 @@ static const unsigned int gappx
+ static const unsigned int borderpx         = 4;  /* border pixel of windows */
  static const int showbar                   = 1; /* 0 means no bar */
  static const int topbar                    = 1; /* 0 means bottom bar */
- static const char *fonts[]                 = {"monospace:size=10"};
-@@ -127,6 +129,7 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
++static const unsigned int systrayspacing   = 2; /* systray spacing */
++static const int showsystray               = 1; /* 0 means no systray */
+ static const char *fonts[]                 = {"monospace:size=16"};
+ static const float rootcolor[]             = COLOR(0x000000ff);
+ /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
+@@ -139,6 +141,7 @@ static const enum libinput_config_tap_bu
  /* commands */
- static const char *termcmd[] = { "foot", NULL };
+ static const char *termcmd[] = { "xfce4-terminal", NULL };
  static const char *menucmd[] = { "wmenu-run", NULL };
 +static const char *dmenucmd[] = { "wmenu", NULL };
  
  static const Key keys[] = {
  	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
-@@ -188,4 +191,6 @@ static const Button buttons[] = {
+@@ -201,4 +204,6 @@ static const Button buttons[] = {
  	{ ClkTagBar,   0,      BTN_RIGHT,  toggleview,     {0} },
  	{ ClkTagBar,   MODKEY, BTN_LEFT,   tag,            {0} },
  	{ ClkTagBar,   MODKEY, BTN_RIGHT,  toggletag,      {0} },
 +	{ ClkTray,     0,      BTN_LEFT,   trayactivate,   {0} },
 +	{ ClkTray,     0,      BTN_RIGHT,  traymenu,       {0} },
  };
-diff --git a/dbus.c b/dbus.c
-new file mode 100644
-index 0000000..125312c
+Index: dwl/dbus.c
+===================================================================
 --- /dev/null
-+++ b/dbus.c
++++ dwl/dbus.c
 @@ -0,0 +1,242 @@
 +#include "dbus.h"
 +
@@ -360,11 +359,10 @@ index 0000000..125312c
 +	                                      NULL);
 +	dbus_connection_set_dispatch_status_function(conn, NULL, NULL, NULL);
 +}
-diff --git a/dbus.h b/dbus.h
-new file mode 100644
-index 0000000..b374b98
+Index: dwl/dbus.h
+===================================================================
 --- /dev/null
-+++ b/dbus.h
++++ dwl/dbus.h
 @@ -0,0 +1,10 @@
 +#ifndef DWLDBUS_H
 +#define DWLDBUS_H
@@ -376,10 +374,10 @@ index 0000000..b374b98
 +void stopbus (DBusConnection *conn, struct wl_event_source *bus_source);
 +
 +#endif /* DWLDBUS_H */
-diff --git a/dwl.c b/dwl.c
-index ece537a..7753ef6 100644
---- a/dwl.c
-+++ b/dwl.c
+Index: dwl/dwl.c
+===================================================================
+--- dwl.orig/dwl.c
++++ dwl/dwl.c
 @@ -1,6 +1,7 @@
  /*
   * See LICENSE file for copyright and license details.
@@ -398,7 +396,7 @@ index ece537a..7753ef6 100644
  
  /* macros */
  #define MAX(A, B)               ((A) > (B) ? (A) : (B))
-@@ -89,7 +93,7 @@ enum { SchemeNorm, SchemeSel, SchemeUrg }; /* color schemes */
+@@ -89,7 +93,7 @@ enum { SchemeNorm, SchemeSel, SchemeUrg
  enum { CurNormal, CurPressed, CurMove, CurResize }; /* cursor */
  enum { XDGShell, LayerShell, X11 }; /* client types */
  enum { LyrBg, LyrBottom, LyrTile, LyrFloat, LyrTop, LyrFS, LyrOverlay, LyrBlock, NUM_LAYERS }; /* scene layers */
@@ -415,8 +413,8 @@ index ece537a..7753ef6 100644
  	struct wlr_box w; /* window area, layout-relative */
  	struct wl_list layers[4]; /* LayerSurface.link */
  	const Layout *lt[2];
-@@ -376,6 +381,9 @@ static void togglefloating(const Arg *arg);
- static void togglefullscreen(const Arg *arg);
+@@ -379,6 +384,9 @@ static void togglefullscreen(const Arg *
+ static void togglegaps(const Arg *arg);
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
 +static void trayactivate(const Arg *arg);
@@ -425,7 +423,7 @@ index ece537a..7753ef6 100644
  static void unlocksession(struct wl_listener *listener, void *data);
  static void unmaplayersurfacenotify(struct wl_listener *listener, void *data);
  static void unmapnotify(struct wl_listener *listener, void *data);
-@@ -451,6 +459,10 @@ static Monitor *selmon;
+@@ -454,6 +462,10 @@ static Monitor *selmon;
  static char stext[256];
  static struct wl_event_source *status_event_source;
  
@@ -436,7 +434,7 @@ index ece537a..7753ef6 100644
  static const struct wlr_buffer_impl buffer_impl = {
      .destroy = bufdestroy,
      .begin_data_ptr_access = bufdatabegin,
-@@ -721,8 +733,8 @@ bufrelease(struct wl_listener *listener, void *data)
+@@ -748,8 +760,8 @@ bufrelease(struct wl_listener *listener,
  void
  buttonpress(struct wl_listener *listener, void *data)
  {
@@ -447,7 +445,7 @@ index ece537a..7753ef6 100644
  	unsigned int click;
  	struct wlr_pointer_button_event *event = data;
  	struct wlr_keyboard *keyboard;
-@@ -732,6 +744,7 @@ buttonpress(struct wl_listener *listener, void *data)
+@@ -759,6 +771,7 @@ buttonpress(struct wl_listener *listener
  	Arg arg = {0};
  	Client *c;
  	const Button *b;
@@ -455,7 +453,7 @@ index ece537a..7753ef6 100644
  
  	wlr_idle_notifier_v1_notify_activity(idle_notifier, seat);
  
-@@ -751,6 +764,8 @@ buttonpress(struct wl_listener *listener, void *data)
+@@ -778,6 +791,8 @@ buttonpress(struct wl_listener *listener
  			(node = wlr_scene_node_at(&layers[LyrBottom]->node, cursor->x, cursor->y, NULL, NULL)) &&
  			(buffer = wlr_scene_buffer_from_node(node)) && buffer == selmon->scene_buffer) {
  			cx = (cursor->x - selmon->m.x) * selmon->wlr_output->scale;
@@ -464,7 +462,7 @@ index ece537a..7753ef6 100644
  			do
  				x += TEXTW(selmon, tags[i]);
  			while (cx >= x && ++i < LENGTH(tags));
-@@ -759,8 +774,16 @@ buttonpress(struct wl_listener *listener, void *data)
+@@ -786,8 +801,16 @@ buttonpress(struct wl_listener *listener
  				arg.ui = 1 << i;
  			} else if (cx < x + TEXTW(selmon, selmon->ltsymbol))
  				click = ClkLtSymbol;
@@ -482,7 +480,7 @@ index ece537a..7753ef6 100644
  			} else
  				click = ClkTitle;
  		}
-@@ -774,7 +797,12 @@ buttonpress(struct wl_listener *listener, void *data)
+@@ -801,7 +824,12 @@ buttonpress(struct wl_listener *listener
  		mods = keyboard ? wlr_keyboard_get_modifiers(keyboard) : 0;
  		for (b = buttons; b < END(buttons); b++) {
  			if (CLEANMASK(mods) == CLEANMASK(b->mod) && event->button == b->button && click == b->click && b->func) {
@@ -496,7 +494,7 @@ index ece537a..7753ef6 100644
  				return;
  			}
  		}
-@@ -840,6 +868,14 @@ cleanup(void)
+@@ -877,6 +905,14 @@ cleanup(void)
  
  	destroykeyboardgroup(&kb_group->destroy, NULL);
  
@@ -511,7 +509,7 @@ index ece537a..7753ef6 100644
  	/* If it's not destroyed manually it will cause a use-after-free of wlr_seat.
  	 * Destroy it until it's fixed in the wlroots side */
  	wlr_backend_destroy(backend);
-@@ -868,6 +904,9 @@ cleanupmon(struct wl_listener *listener, void *data)
+@@ -905,6 +941,9 @@ cleanupmon(struct wl_listener *listener,
  	for (i = 0; i < LENGTH(m->pool); i++)
  		wlr_buffer_drop(&m->pool[i]->base);
  
@@ -521,7 +519,7 @@ index ece537a..7753ef6 100644
  	drwl_setimage(m->drw, NULL);
  	drwl_destroy(m->drw);
  
-@@ -1506,6 +1545,7 @@ dirtomon(enum wlr_direction dir)
+@@ -1545,6 +1584,7 @@ dirtomon(enum wlr_direction dir)
  void
  drawbar(Monitor *m)
  {
@@ -529,7 +527,7 @@ index ece537a..7753ef6 100644
  	int x, w, tw = 0;
  	int boxs = m->drw->font->height / 9;
  	int boxw = m->drw->font->height / 6 + 2;
-@@ -1518,11 +1558,13 @@ drawbar(Monitor *m)
+@@ -1557,11 +1597,13 @@ drawbar(Monitor *m)
  	if (!(buf = bufmon(m)))
  		return;
  
@@ -544,7 +542,7 @@ index ece537a..7753ef6 100644
  	}
  
  	wl_list_for_each(c, &clients, link) {
-@@ -1548,7 +1590,7 @@ drawbar(Monitor *m)
+@@ -1587,7 +1629,7 @@ drawbar(Monitor *m)
  	drwl_setscheme(m->drw, colors[SchemeNorm]);
  	x = drwl_text(m->drw, x, 0, w, m->b.height, m->lrpad / 2, m->ltsymbol, 0);
  
@@ -553,7 +551,7 @@ index ece537a..7753ef6 100644
  		if (c) {
  			drwl_setscheme(m->drw, colors[m == selmon ? SchemeSel : SchemeNorm]);
  			drwl_text(m->drw, x, 0, w, m->b.height, m->lrpad / 2, client_get_title(c), 0);
-@@ -1560,6 +1602,15 @@ drawbar(Monitor *m)
+@@ -1599,6 +1641,15 @@ drawbar(Monitor *m)
  		}
  	}
  
@@ -569,11 +567,10 @@ index ece537a..7753ef6 100644
  	wlr_scene_buffer_set_dest_size(m->scene_buffer,
  		m->b.real_width, m->b.real_height);
  	wlr_scene_node_set_position(&m->scene_buffer->node, m->m.x,
-@@ -1568,6 +1619,26 @@ drawbar(Monitor *m)
- 	wlr_buffer_unlock(&buf->base);
+@@ -1608,6 +1659,26 @@ drawbar(Monitor *m)
  }
  
-+void
+ void
 +traynotify(void *data)
 +{
 +	Monitor *m = data;
@@ -593,10 +590,11 @@ index ece537a..7753ef6 100644
 +	tray_rightclicked(selmon->tray, arg->ui, dmenucmd);
 +}
 +
- void
++void
  drawbars(void)
  {
-@@ -2818,6 +2889,15 @@ setup(void)
+ 	Monitor *m = NULL;
+@@ -2871,6 +2942,15 @@ setup(void)
  	status_event_source = wl_event_loop_add_fd(wl_display_get_event_loop(dpy),
  		STDIN_FILENO, WL_EVENT_READABLE, statusin, NULL);
  
@@ -612,7 +610,7 @@ index ece537a..7753ef6 100644
  	/* Make sure XWayland clients don't connect to the parent X server,
  	 * e.g when running in the x11 backend or the wayland backend and the
  	 * compositor has Xwayland support */
-@@ -3160,6 +3240,7 @@ updatebar(Monitor *m)
+@@ -3227,6 +3307,7 @@ updatebar(Monitor *m)
  	size_t i;
  	int rw, rh;
  	char fontattrs[12];
@@ -620,7 +618,7 @@ index ece537a..7753ef6 100644
  
  	wlr_output_transformed_resolution(m->wlr_output, &rw, &rh);
  	m->b.width = rw;
-@@ -3185,6 +3266,18 @@ updatebar(Monitor *m)
+@@ -3252,6 +3333,18 @@ updatebar(Monitor *m)
  	m->lrpad = m->drw->font->height;
  	m->b.height = m->drw->font->height + 2;
  	m->b.real_height = (int)((float)m->b.height / m->wlr_output->scale);
@@ -639,11 +637,10 @@ index ece537a..7753ef6 100644
  }
  
  void
-diff --git a/systray/helpers.c b/systray/helpers.c
-new file mode 100644
-index 0000000..d1af9f8
+Index: dwl/systray/helpers.c
+===================================================================
 --- /dev/null
-+++ b/systray/helpers.c
++++ dwl/systray/helpers.c
 @@ -0,0 +1,43 @@
 +#include "helpers.h"
 +
@@ -688,11 +685,10 @@ index 0000000..d1af9f8
 +		dbus_message_unref(msg);
 +	return r;
 +}
-diff --git a/systray/helpers.h b/systray/helpers.h
-new file mode 100644
-index 0000000..2c592e0
+Index: dwl/systray/helpers.h
+===================================================================
 --- /dev/null
-+++ b/systray/helpers.h
++++ dwl/systray/helpers.h
 @@ -0,0 +1,12 @@
 +#ifndef HELPERS_H
 +#define HELPERS_H
@@ -706,11 +702,10 @@ index 0000000..2c592e0
 +                      PropHandler handler, void *data);
 +
 +#endif /* HELPERS_H */
-diff --git a/systray/icon.c b/systray/icon.c
-new file mode 100644
-index 0000000..1b97866
+Index: dwl/systray/icon.c
+===================================================================
 --- /dev/null
-+++ b/systray/icon.c
++++ dwl/systray/icon.c
 @@ -0,0 +1,149 @@
 +#include "icon.h"
 +
@@ -861,11 +856,10 @@ index 0000000..1b97866
 +
 +	return 0;
 +}
-diff --git a/systray/icon.h b/systray/icon.h
-new file mode 100644
-index 0000000..20f281b
+Index: dwl/systray/icon.h
+===================================================================
 --- /dev/null
-+++ b/systray/icon.h
++++ dwl/systray/icon.h
 @@ -0,0 +1,26 @@
 +#ifndef ICON_H
 +#define ICON_H
@@ -893,11 +887,10 @@ index 0000000..20f281b
 +int resize_image (pixman_image_t *orig, int new_width, int new_height);
 +
 +#endif /* ICON_H */
-diff --git a/systray/item.c b/systray/item.c
-new file mode 100644
-index 0000000..4359a28
+Index: dwl/systray/item.c
+===================================================================
 --- /dev/null
-+++ b/systray/item.c
++++ dwl/systray/item.c
 @@ -0,0 +1,403 @@
 +#include "item.h"
 +
@@ -1302,11 +1295,10 @@ index 0000000..4359a28
 +	if (msg)
 +		dbus_message_unref(msg);
 +}
-diff --git a/systray/item.h b/systray/item.h
-new file mode 100644
-index 0000000..dc22e25
+Index: dwl/systray/item.h
+===================================================================
 --- /dev/null
-+++ b/systray/item.h
++++ dwl/systray/item.h
 @@ -0,0 +1,46 @@
 +#ifndef ITEM_H
 +#define ITEM_H
@@ -1354,11 +1346,10 @@ index 0000000..dc22e25
 +void item_show_menu (Item *item);
 +
 +#endif /* ITEM_H */
-diff --git a/systray/menu.c b/systray/menu.c
-new file mode 100644
-index 0000000..ff3bfb5
+Index: dwl/systray/menu.c
+===================================================================
 --- /dev/null
-+++ b/systray/menu.c
++++ dwl/systray/menu.c
 @@ -0,0 +1,757 @@
 +#include "menu.h"
 +
@@ -2117,11 +2108,10 @@ index 0000000..ff3bfb5
 +		dbus_message_unref(msg);
 +	free(menu);
 +}
-diff --git a/systray/menu.h b/systray/menu.h
-new file mode 100644
-index 0000000..7f48ada
+Index: dwl/systray/menu.h
+===================================================================
 --- /dev/null
-+++ b/systray/menu.h
++++ dwl/systray/menu.h
 @@ -0,0 +1,11 @@
 +#ifndef MENU_H
 +#define MENU_H
@@ -2134,11 +2124,10 @@ index 0000000..7f48ada
 +                const char *busname, const char *busobj, const char **menucmd);
 +
 +#endif /* MENU_H */
-diff --git a/systray/tray.c b/systray/tray.c
-new file mode 100644
-index 0000000..7f9b1b0
+Index: dwl/systray/tray.c
+===================================================================
 --- /dev/null
-+++ b/systray/tray.c
++++ dwl/systray/tray.c
 @@ -0,0 +1,237 @@
 +#include "tray.h"
 +
@@ -2377,11 +2366,10 @@ index 0000000..7f9b1b0
 +		count++;
 +	}
 +}
-diff --git a/systray/tray.h b/systray/tray.h
-new file mode 100644
-index 0000000..af4e5e3
+Index: dwl/systray/tray.h
+===================================================================
 --- /dev/null
-+++ b/systray/tray.h
++++ dwl/systray/tray.h
 @@ -0,0 +1,37 @@
 +#ifndef TRAY_H
 +#define TRAY_H
@@ -2420,11 +2408,10 @@ index 0000000..af4e5e3
 +void tray_rightclicked (Tray *tray, unsigned int index, const char **menucmd);
 +
 +#endif /* TRAY_H */
-diff --git a/systray/watcher.c b/systray/watcher.c
-new file mode 100644
-index 0000000..8dd84b9
+Index: dwl/systray/watcher.c
+===================================================================
 --- /dev/null
-+++ b/systray/watcher.c
++++ dwl/systray/watcher.c
 @@ -0,0 +1,551 @@
 +#include "watcher.h"
 +
@@ -2977,11 +2964,10 @@ index 0000000..8dd84b9
 +	wl_list_for_each(tray, &watcher->trays, link)
 +		tray_update(tray);
 +}
-diff --git a/systray/watcher.h b/systray/watcher.h
-new file mode 100644
-index 0000000..127eb64
+Index: dwl/systray/watcher.h
+===================================================================
 --- /dev/null
-+++ b/systray/watcher.h
++++ dwl/systray/watcher.h
 @@ -0,0 +1,35 @@
 +#ifndef WATCHER_H
 +#define WATCHER_H
@@ -3018,6 +3004,3 @@ index 0000000..127eb64
 +void watcher_update_trays (Watcher *watcher);
 +
 +#endif /* WATCHER_H */
--- 
-2.49.0
-

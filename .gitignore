@@ -5,3 +5,5 @@ dwl/config.h
 dwl/dwl.o
 dwl/util.o
 dwl/.pc
+dwl/systray
+dwl/dbus.o
