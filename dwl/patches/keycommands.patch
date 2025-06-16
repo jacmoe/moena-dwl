@@ -2,7 +2,12 @@ Index: dwl/config.def.h
 ===================================================================
 --- dwl.orig/config.def.h
 +++ dwl/config.def.h
-@@ -143,19 +143,25 @@ static const char *termcmd[] = { "xfce4-
+@@ -139,23 +139,29 @@ static const enum libinput_config_tap_bu
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
+ /* commands */
+-static const char *termcmd[] = { "xfce4-terminal", NULL };
++static const char *termcmd[] = { "foot", NULL };
  static const char *menucmd[] = { "wmenu-run", NULL };
  static const char *dmenucmd[] = { "wmenu", NULL };
  
