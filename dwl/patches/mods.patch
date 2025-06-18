@@ -2,7 +2,27 @@ Index: dwl/config.def.h
 ===================================================================
 --- dwl.orig/config.def.h
 +++ dwl/config.def.h
-@@ -131,7 +131,7 @@ LIBINPUT_CONFIG_TAP_MAP_LMR -- 1/2/3 fin
+@@ -8,7 +8,7 @@ static const int sloppyfocus
+ static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
+ static const int enablegaps                = 1;  /* 1 means gaps are enabled */
+ static const int smartgaps                 = 0;  /* 1 means no outer gap when there is only one window */
+-static const int monoclegaps               = 0;  /* 1 means outer gaps in monocle layout */
++static const int monoclegaps               = 1;  /* 1 means outer gaps in monocle layout */
+ static const unsigned int borderpx         = 1;  /* border pixel of windows */
+ static const unsigned int gappih           = 10; /* horiz inner gap between windows */
+ static const unsigned int gappiv           = 10; /* vert inner gap between windows */
+@@ -81,7 +81,9 @@ static const struct xkb_rule_names xkb_r
+ 	/* example:
+ 	.options = "ctrl:nocaps",
+ 	*/
+-	.options = NULL,
++    .layout = "us,no",
++    .variant = "colemak, colemak",
++    .options = "grp:shifts_toggle",
+ };
+ 
+ static const int repeat_rate = 25;
+@@ -131,7 +133,7 @@ LIBINPUT_CONFIG_TAP_MAP_LMR -- 1/2/3 fin
  static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TAP_MAP_LRM;
  
  /* If you want to use the windows key for MODKEY, use WLR_MODIFIER_LOGO */
@@ -11,3 +31,51 @@ Index: dwl/config.def.h
  
  #define TAGKEYS(KEY,SKEY,TAG) \
  	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
+@@ -146,17 +148,23 @@ static const enum libinput_config_tap_bu
+ static const char *termcmd[] = { "foot", NULL };
+ static const char *menucmd[] = { "wmenu-run", NULL };
+ static const char *dmenucmd[] = { "wmenu", NULL };
++static const char *roficmd[] = { "rofi", "-show", "drun", "-icon-theme", "'papirus'", "-show-icons", NULL};
++static const char *appscmd[]  = { "/home/moena/.local/bin/dwlapps.sh", NULL };
++static const char *powercmd[]  = { "/home/moena/.local/bin/powermenu", NULL };
++static const char *prtscrcmd[]  = { "flameshot", "gui", NULL };
+ 
+ static const Key keys[] = {
+ 	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
+ 	/* modifier                  key                 function        argument */
+-	{ MODKEY,                    XKB_KEY_p,          spawn,          {.v = menucmd} },
+-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     spawn,          {.v = termcmd} },
++	{ MODKEY,                    XKB_KEY_p,          spawn,          {.v = roficmd} },
++	{ MODKEY,                    XKB_KEY_Return,     spawn,          {.v = termcmd} },
++	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_x,          spawn,          {.v = appscmd} },
++	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_w,          spawn,          {.v = powercmd} },
+ 	{ MODKEY,                    XKB_KEY_b,          togglebar,      {0} },
+-	{ MODKEY,                    XKB_KEY_j,          focusstack,     {.i = +1} },
+-	{ MODKEY,                    XKB_KEY_k,          focusstack,     {.i = -1} },
+-	{ MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} },
+-	{ MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} },
++	{ MODKEY,                    XKB_KEY_n,          focusstack,     {.i = +1} },
++	{ MODKEY,                    XKB_KEY_e,          focusstack,     {.i = -1} },
++	/* { MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} }, */
++	/* { MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} }, */
+ 	{ MODKEY,                    XKB_KEY_h,          setmfact,       {.f = -0.05f} },
+ 	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05f} },
+ 	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_h,          incgaps,       {.i = +1 } },
+@@ -175,7 +183,7 @@ static const Key keys[] = {
+ 	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_o,          incohgaps,     {.i = -1 } },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Y,          incovgaps,     {.i = +1 } },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_O,          incovgaps,     {.i = -1 } },
+-	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
++	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     zoom,           {0} },
+ 	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_C,          killclient,     {0} },
+ 	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
+@@ -183,7 +191,7 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
+ 	{ MODKEY,                    XKB_KEY_space,      setlayout,      {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,      togglefloating, {0} },
+-	{ MODKEY,                    XKB_KEY_e,         togglefullscreen, {0} },
++	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_f,         togglefullscreen, {0} },
+ 	{ MODKEY,                    XKB_KEY_0,          view,           {.ui = ~0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright, tag,            {.ui = ~0} },
+ 	{ MODKEY,                    XKB_KEY_comma,      focusmon,       {.i = WLR_DIRECTION_LEFT} },
