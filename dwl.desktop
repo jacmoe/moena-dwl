@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=dwl
+Comment=dwm for Wayland
+Exec=/home/moena/bin/startdwl.sh
+Type=Application

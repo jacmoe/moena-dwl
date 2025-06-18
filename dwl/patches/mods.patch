@@ -11,6 +11,26 @@ Index: dwl/config.def.h
  static const unsigned int borderpx         = 1;  /* border pixel of windows */
  static const unsigned int gappih           = 10; /* horiz inner gap between windows */
  static const unsigned int gappiv           = 10; /* vert inner gap between windows */
+@@ -39,7 +39,7 @@ static int log_level = WLR_ERROR;
+ 
+ /* Autostart */
+ static const char *const autostart[] = {
+-        "wbg", "/path/to/your/image", NULL,
++        "swaybg", "-i", "backgrounds/flatppuccin_4k_macchiato.jpg", NULL,
+         NULL /* terminate */
+ };
+ 
+@@ -55,9 +55,9 @@ static const Rule rules[] = {
+ /* layout(s) */
+ static const Layout layouts[] = {
+ 	/* symbol     arrange function */
++	{ "[M]",      monocle },
+ 	{ "[]=",      tile },
+ 	{ "><>",      NULL },    /* no layout function means floating behavior */
+-	{ "[M]",      monocle },
+ };
+ 
+ /* monitors */
 @@ -81,7 +81,9 @@ static const struct xkb_rule_names xkb_r
  	/* example:
  	.options = "ctrl:nocaps",
@@ -61,7 +81,7 @@ Index: dwl/config.def.h
  	{ MODKEY,                    XKB_KEY_h,          setmfact,       {.f = -0.05f} },
  	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05f} },
  	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_h,          incgaps,       {.i = +1 } },
-@@ -175,7 +183,7 @@ static const Key keys[] = {
+@@ -175,15 +183,15 @@ static const Key keys[] = {
  	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_o,          incohgaps,     {.i = -1 } },
  	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Y,          incovgaps,     {.i = +1 } },
  	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_O,          incovgaps,     {.i = -1 } },
@@ -69,9 +89,12 @@ Index: dwl/config.def.h
 +	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     zoom,           {0} },
  	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
  	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_C,          killclient,     {0} },
- 	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
-@@ -183,7 +191,7 @@ static const Key keys[] = {
- 	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
+-	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
+-	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
+-	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
++	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[0]} },
++	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[1]} },
++	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[2]} },
  	{ MODKEY,                    XKB_KEY_space,      setlayout,      {0} },
  	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,      togglefloating, {0} },
 -	{ MODKEY,                    XKB_KEY_e,         togglefullscreen, {0} },
