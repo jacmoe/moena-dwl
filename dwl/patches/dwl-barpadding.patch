@@ -9,29 +9,24 @@ https://dwm.suckless.org/patches/barpadding/
  dwl.c        | 14 +++++++-------
  2 files changed, 9 insertions(+), 7 deletions(-)
 
-Index: dwl/config.def.h
-===================================================================
---- dwl.orig/config.def.h
-+++ dwl/config.def.h
-@@ -14,10 +14,13 @@ static const unsigned int gappih
- static const unsigned int gappiv           = 10; /* vert inner gap between windows */
- static const unsigned int gappoh           = 10; /* horiz outer gap between windows and screen edge */
- static const unsigned int gappov           = 10; /* vert outer gap between windows and screen edge */
-+static const int vertpad                   = 10; /* vertical padding of bar */
-+static const int sidepad                   = 10; /* horizontal padding of bar */
- static const float rootcolor[]             = COLOR(0x222222ff);
- static const float bordercolor[]           = COLOR(0x444444ff);
- static const float focuscolor[]            = COLOR(0x005577ff);
- static const float urgentcolor[]           = COLOR(0xff0000ff);
-+static const char *fonts[]                 = {"monospace:size=10"};
+diff --git a/config.def.h b/config.def.h
+index 5d1dc2b..756b1ae 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -9,6 +9,8 @@ static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will
+ static const unsigned int borderpx         = 1;  /* border pixel of windows */
  static const int showbar                   = 1; /* 0 means no bar */
  static const int topbar                    = 1; /* 0 means bottom bar */
++static const int vertpad                   = 10; /* vertical padding of bar */
++static const int sidepad                   = 10; /* horizontal padding of bar */
+ static const char *fonts[]                 = {"monospace:size=10"};
+ static const float rootcolor[]             = COLOR(0x000000ff);
  /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
-Index: dwl/dwl.c
-===================================================================
---- dwl.orig/dwl.c
-+++ dwl/dwl.c
-@@ -658,8 +658,8 @@ arrangelayers(Monitor *m)
+diff --git a/dwl.c b/dwl.c
+index ece537a..380549a 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -598,8 +598,8 @@ arrangelayers(Monitor *m)
  		return;
  
  	if (m->scene_buffer->node.enabled) {
@@ -42,7 +37,7 @@ Index: dwl/dwl.c
  	}
  
  	/* Arrange exclusive surfaces from top->bottom */
-@@ -810,7 +810,7 @@ buttonpress(struct wl_listener *listener
+@@ -750,7 +750,7 @@ buttonpress(struct wl_listener *listener, void *data)
  		if (!c && !exclusive_focus &&
  			(node = wlr_scene_node_at(&layers[LyrBottom]->node, cursor->x, cursor->y, NULL, NULL)) &&
  			(buffer = wlr_scene_buffer_from_node(node)) && buffer == selmon->scene_buffer) {
@@ -51,7 +46,7 @@ Index: dwl/dwl.c
  			do
  				x += TEXTW(selmon, tags[i]);
  			while (cx >= x && ++i < LENGTH(tags));
-@@ -1634,8 +1634,8 @@ drawbar(Monitor *m)
+@@ -1562,8 +1562,8 @@ drawbar(Monitor *m)
  
  	wlr_scene_buffer_set_dest_size(m->scene_buffer,
  		m->b.real_width, m->b.real_height);
@@ -62,7 +57,7 @@ Index: dwl/dwl.c
  	wlr_scene_buffer_set_buffer(m->scene_buffer, &buf->base);
  	wlr_buffer_unlock(&buf->base);
  }
-@@ -3360,8 +3360,8 @@ updatebar(Monitor *m)
+@@ -3162,8 +3162,8 @@ updatebar(Monitor *m)
  	char fontattrs[12];
  
  	wlr_output_transformed_resolution(m->wlr_output, &rw, &rh);
@@ -73,3 +68,6 @@ Index: dwl/dwl.c
  
  	wlr_scene_node_set_enabled(&m->scene_buffer->node, m->wlr_output->enabled ? showbar : 0);
  
+-- 
+2.46.0
+
