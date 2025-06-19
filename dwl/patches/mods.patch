@@ -51,7 +51,7 @@ Index: dwl/config.def.h
  
  #define TAGKEYS(KEY,SKEY,TAG) \
  	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
-@@ -146,17 +148,23 @@ static const enum libinput_config_tap_bu
+@@ -146,19 +148,25 @@ static const enum libinput_config_tap_bu
  static const char *termcmd[] = { "foot", NULL };
  static const char *menucmd[] = { "wmenu-run", NULL };
  static const char *dmenucmd[] = { "wmenu", NULL };
@@ -79,8 +79,11 @@ Index: dwl/config.def.h
 +	/* { MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} }, */
 +	/* { MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} }, */
  	{ MODKEY,                    XKB_KEY_h,          setmfact,       {.f = -0.05f} },
- 	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05f} },
+-	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05f} },
++	{ MODKEY,                    XKB_KEY_i,          setmfact,       {.f = +0.05f} },
  	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_h,          incgaps,       {.i = +1 } },
+ 	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_l,          incgaps,       {.i = -1 } },
+ 	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,   XKB_KEY_H,      incogaps,      {.i = +1 } },
 @@ -175,15 +183,15 @@ static const Key keys[] = {
  	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_o,          incohgaps,     {.i = -1 } },
  	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Y,          incovgaps,     {.i = +1 } },
