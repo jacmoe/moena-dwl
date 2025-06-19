@@ -3,7 +3,9 @@ This is my own personal build of DWM (Dynamic Window Manager) for Wayland, [[htt
 
 Currently using DWL version 0.7, the latest as of June 2025.
 
-This DWL build is not heavily patched. In fact, I am only using five patches:
+This DWL build is not heavily patched.
+
+These five patches are used:
 
 - =dwl-genericgaps-0.7.patch= from [[https://codeberg.org/dwl/dwl-patches/src/branch/main/patches/genericgaps]]
 - =dwl-bar-0.7.patch= from [[https://codeberg.org/dwl/dwl-patches/src/branch/main/patches/bar]]
@@ -11,14 +13,14 @@ This DWL build is not heavily patched. In fact, I am only using five patches:
 - =dwl-bar-systray-0.7.patch= from [[https://codeberg.org/dwl/dwl-patches/src/branch/main/patches/bar-systray]]
 - =dwl-autostart-0.7.patch= from [[https://codeberg.org/dwl/dwl-patches/src/branch/main/patches/autostart]]
 
-I have created then created a patch of my changes in order to keep the source tree clean:
+I have then created a patch of my changes in order to keep the source tree clean:
 
-- =mods.patch= with my custom changes
+- =mods.patch=
 
 I am using [[https://savannah.nongnu.org/projects/quilt][Quilt]] to manage the patches.
 
 To build and install, I run =quilt push -a= to apply all the patches, followed by =rebuild.sh=.
 
-I then run =quilt pop -a= to un-apply the patches and return to a state that is either pristine or in need of a git commit (because one patch was updated).
+I then run =quilt pop -a= to un-apply the patches and run =clean.sh= to return to a state that is either pristine or in need of a git commit (because one patch was updated).
 
-Keeping all changes in patches makes it much easier to upgrade DWM to a new version when that happens.
+Keeping all changes in patches makes it much easier to upgrade DWL to a new version when that happens.
