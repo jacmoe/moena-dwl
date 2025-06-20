@@ -11,7 +11,26 @@ Index: dwl/config.def.h
  static const unsigned int borderpx         = 1;  /* border pixel of windows */
  static const unsigned int gappih           = 10; /* horiz inner gap between windows */
  static const unsigned int gappiv           = 10; /* vert inner gap between windows */
-@@ -39,7 +39,7 @@ static int log_level = WLR_ERROR;
+@@ -22,9 +22,17 @@ static const int vertpad
+ static const int sidepad                   = 10; /* horizontal padding of bar */
+ static const char *fonts[]                 = {"monospace:size=10"};
+ static const float rootcolor[]             = COLOR(0x000000ff);
+-/* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
+ static const float fullscreen_bg[]         = {0.1f, 0.1f, 0.1f, 1.0f}; /* You can also use glsl colors */
++/* Color chart for reference, for now
++int col_norm_fg = "#bbbbbbff";
++int col_norm_bg = "#222222ff";
++int col_norm_bo = "#444444ff";
++int col_sel_fg = "#eeeeeeff";
++int col_sel_bg = "#005577ff";
++int col_sel_bo = "#005577ff";
++//*/
+ static uint32_t colors[][3]                = {
++/* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
+ 	/*               fg          bg          border    */
+ 	[SchemeNorm] = { 0xbbbbbbff, 0x222222ff, 0x444444ff },
+ 	[SchemeSel]  = { 0xeeeeeeff, 0x005577ff, 0x005577ff },
+@@ -39,7 +47,7 @@ static int log_level = WLR_ERROR;
  
  /* Autostart */
  static const char *const autostart[] = {
@@ -20,7 +39,7 @@ Index: dwl/config.def.h
          NULL /* terminate */
  };
  
-@@ -55,9 +55,9 @@ static const Rule rules[] = {
+@@ -55,9 +63,9 @@ static const Rule rules[] = {
  /* layout(s) */
  static const Layout layouts[] = {
  	/* symbol     arrange function */
@@ -31,7 +50,7 @@ Index: dwl/config.def.h
  };
  
  /* monitors */
-@@ -81,7 +81,9 @@ static const struct xkb_rule_names xkb_r
+@@ -81,7 +89,9 @@ static const struct xkb_rule_names xkb_r
  	/* example:
  	.options = "ctrl:nocaps",
  	*/
@@ -42,7 +61,7 @@ Index: dwl/config.def.h
  };
  
  static const int repeat_rate = 25;
-@@ -131,7 +133,7 @@ LIBINPUT_CONFIG_TAP_MAP_LMR -- 1/2/3 fin
+@@ -131,7 +141,7 @@ LIBINPUT_CONFIG_TAP_MAP_LMR -- 1/2/3 fin
  static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TAP_MAP_LRM;
  
  /* If you want to use the windows key for MODKEY, use WLR_MODIFIER_LOGO */
@@ -51,7 +70,7 @@ Index: dwl/config.def.h
  
  #define TAGKEYS(KEY,SKEY,TAG) \
  	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
-@@ -146,19 +148,25 @@ static const enum libinput_config_tap_bu
+@@ -146,19 +156,25 @@ static const enum libinput_config_tap_bu
  static const char *termcmd[] = { "foot", NULL };
  static const char *menucmd[] = { "wmenu-run", NULL };
  static const char *dmenucmd[] = { "wmenu", NULL };
@@ -84,7 +103,7 @@ Index: dwl/config.def.h
  	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_h,          incgaps,       {.i = +1 } },
  	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_l,          incgaps,       {.i = -1 } },
  	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,   XKB_KEY_H,      incogaps,      {.i = +1 } },
-@@ -175,15 +183,15 @@ static const Key keys[] = {
+@@ -175,15 +191,15 @@ static const Key keys[] = {
  	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_o,          incohgaps,     {.i = -1 } },
  	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Y,          incovgaps,     {.i = +1 } },
  	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_O,          incovgaps,     {.i = -1 } },
