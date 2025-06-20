@@ -8,3 +8,4 @@ dwl/.pc
 dwl/systray
 dwl/dbus.o
 wslstatus/.pc
+wslstatus/config.h
