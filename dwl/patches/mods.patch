@@ -73,7 +73,7 @@ Index: dwl/config.def.h
 +static const char *roficmd[] = { "rofi", "-show", "drun", "-icon-theme", "'papirus'", "-show-icons", NULL};
 +static const char *appscmd[]  = { "/home/moena/.local/bin/dwlapps.sh", NULL };
 +static const char *powercmd[]  = { "/home/moena/.local/bin/powermenu", NULL };
-+static const char *prtscrcmd[] = { "grim", "-g", "'$(slurp)'", "-", "|", "swappy", "-f", "-", NULL};
++static const char *prtscrcmd[] =  { "/home/moena/.local/bin/screenshot.sh", NULL };
  
  static const Key keys[] = {
  	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
