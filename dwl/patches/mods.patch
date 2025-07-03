@@ -31,7 +31,7 @@ Index: dwl/config.def.h
  /* Autostart */
  static const char *const autostart[] = {
 -        "wbg", "/path/to/your/image", NULL,
-+        "swaybg", "-i", "backgrounds/flatppuccin_4k_macchiato.jpg", NULL,
++        "swaybg", "-i", "backgrounds/0158.jpg", NULL,
          NULL /* terminate */
  };
  
